@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>St. Mary’s University Payment</title>
+  <style>
+    body, html {
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+    }
+  .bg {
+  background: url('images(1).JFIF') no-repeat center center / cover;
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  filter: brightness(0.6);
+  z-index: -1;
+}
+
+
+
+    .container {
+      display: flex;
+      height: 100%;
+    }
+    .sidebar {
+      width: 200px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 20px;
+    }
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      color: #333;
+    }
+    .card h1 {
+      margin-top: 0;
+      font-size: 22px;
+      color: #111;
+    }
+    .card input, .card button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .card button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .card button:hover {
+      background: #0056b3;
+    }
+    .hidden {
+      display: none;
+    }
+    .receipt {
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .receipt p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+
+  <div class="container">
+    <div class="sidebar">
+      <h2>Menu</h2>
+      <button onclick="showForm()">New Payment</button>
+      <button onclick="showHistory()">Transaction History</button>
+    </div>
+
+    <div class="main">
+      <div class="card" id="form-card">
+        <h1>St. Mary’s University Payment</h1>
+        <label for="studentName">Full Name:</label>
+        <input type="text" id="studentName" placeholder="John Kebede">
+
+        <label for="deptIdYear">Department / ID / Year:</label>
+        <input type="text" id="deptIdYear" placeholder="Ex: RCD/0000/2016">
+
+        <button onclick="goToPayment()">Continue</button>
+      </div>
+
+      <div class="card hidden" id="payment-card">
+        <h1>Confirm & Pay</h1>
+
+        <p><strong>Student name:</strong> <span id="confName"></span></p>
+        <p><strong>Dept / ID / Year:</strong> <span id="confDept"></span></p>
+
+        <hr>
+
+        <label for="payPhone">Telebirr Phone Number:</label>
+        <input type="tel" id="payPhone" placeholder="09XXXXXXXX">
+
+        <label for="payerFullName">Name on payment:</label>
+        <input type="text" id="payerFullName" placeholder="John Kebede">
+
+        <label for="amount">Amount (ETB):</label>
+        <input type="number" id="amount" placeholder="e.g. 2000">
+
+        <button onclick="makePayment()">Pay via Telebirr</button>
+      </div>
+
+      <div class="card hidden" id="receipt-card">
+        <h1>Payment Receipt</h1>
+        <div class="receipt">
+          <p><strong>Payer:</strong> <span id="rcpPayer"></span></p>
+          <p><strong>Paid to:</strong> <span id="rcpPaidTo">St. Mary’s University</span></p>
+          <p><strong>Amount:</strong> <span id="rcpAmount"></span> ETB</p>
+          <p><strong>Dept / ID / Year:</strong> <span id="rcpDept"></span></p>
+          <p><strong>Reference No:</strong> <span id="rcpRef"></span></p>
+        </div>
+        <button onclick="resetAll()">Make Another Payment</button>
+      </div>
+
+      <div class="card hidden" id="history-card">
+        <h1>Transaction History</h1>
+        <p>(This is a demo — no real history yet.)</p>
+        <button onclick="showForm()">Back to Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showForm() {
+      hideAll();
+      document.getElementById('form-card').classList.remove('hidden');
+    }
+    function showHistory() {
+      hideAll();
+      document.getElementById('history-card').classList.remove('hidden');
+    }
+    function hideAll() {
+      document.getElementById('form-card').classList.add('hidden');
+      document.getElementById('payment-card').classList.add('hidden');
+      document.getElementById('receipt-card').classList.add('hidden');
+      document.getElementById('history-card').classList.add('hidden');
+    }
+
+    function goToPayment() {
+      const name = document.getElementById('studentName').value.trim();
+      const didy = document.getElementById('deptIdYear').value.trim();
+      if (!name || !didy) {
+        alert('Please fill both fields.');
+        return;
+      }
+      document.getElementById('confName').innerText = name;
+      document.getElementById('confDept').innerText = didy;
+
+      hideAll();
+      document.getElementById('payment-card').classList.remove('hidden');
+    }
+
+    function makePayment() {
+      const payPhone = document.getElementById('payPhone').value.trim();
+      const payerName = document.getElementById('payerFullName').value.trim();
+      const amount = document.getElementById('amount').value;
+      if (!payPhone || !payerName || !amount || Number(amount) <= 0) {
+        alert('Please complete payment details.');
+        return;
+      }
+
+      // Simulate payment and receipt
+      const dept = document.getElementById('confDept').innerText;
+      const ref = 'REF' + Date.now();
+      document.getElementById('rcpPayer').innerText = payerName;
+      document.getElementById('rcpAmount').innerText = amount;
+      document.getElementById('rcpDept').innerText = dept;
+      document.getElementById('rcpRef').innerText = ref;
+
+      hideAll();
+      document.getElementById('receipt-card').classList.remove('hidden');
+    }
+
+    function resetAll() {
+      document.getElementById('studentName').value = '';
+      document.getElementById('deptIdYear').value = '';
+      document.getElementById('payPhone').value = '';
+      document.getElementById('payerFullName').value = '';
+      document.getElementById('amount').value = '';
+      hideAll();
+      document.getElementById('form-card').classList.remove('hidden');
+    }
+
+    // On page load, show form
+    showForm();
+  </script>
+</body>
+</html>
